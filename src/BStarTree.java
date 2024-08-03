@@ -16,13 +16,11 @@ public class BStarTree {
     class Node {
         boolean leaf;
         ArrayList<Reg> keys;
-        ArrayList<Integer> values;
         ArrayList<Node> children;
 
         Node(boolean leaf) {
             this.leaf = leaf;
             this.keys = new ArrayList<>();
-            this.values = new ArrayList<>();
             this.children = new ArrayList<>();
         }
     }
@@ -78,7 +76,6 @@ public class BStarTree {
                 i--;
             }
             node.keys.add(i + 1, key);
-            node.values.add(i + 1);
         } else {
             while (i >= 0 && key.ID < node.keys.get(i).ID) {
                 i--;
@@ -95,12 +92,12 @@ public class BStarTree {
     }
 
     // Method to search for a key in the B* tree
-    public Integer search(Reg key) {
+    public Reg search(Reg key) {
         // Initialize the search starting from the root node
         return search(root, key);
     }
     
-    private Integer search(Node node, Reg key) {
+    private Reg search(Node node, Reg key) {
         int i = 0;
     
         // Traverse the keys in the current node to find the correct position or match
@@ -108,11 +105,11 @@ public class BStarTree {
             i++;
         }
     
-        // If the key matches one in the current node, return the associated value
+        // If the key matches one in the current node, return the key
         if (i < node.keys.size() && key.ID == node.keys.get(i).ID) {
             found = true;
             foundata = node.keys.get(i);
-            return node.values.get(i);
+            return node.keys.get(i);
         }
     
         // If the current node is a leaf and the key isn't found, return null
@@ -131,10 +128,6 @@ public class BStarTree {
         // If out of bounds, return null
         return null;
     }
-    
-    
-    
-    
 
     // Method to delete a key from the B* tree
     public void delete(int ID) {
