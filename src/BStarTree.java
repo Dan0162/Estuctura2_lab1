@@ -156,8 +156,7 @@ public class BStarTree {
         } else {
             if (node.leaf) {
                 found = false;
-                foundata = null;
-                System.out.println("The key " + ID + " is not present in the tree.");
+                foundata = null;                
                 return;
             }
 

@@ -103,8 +103,7 @@ class BTreeNode {
         } else {
             if (leaf) {
                 tree.found = false;
-                tree.foundata = null;
-                System.out.println("The key " + ID + " does not exist in the tree.");
+                tree.foundata = null;                
                 return;
             }
 

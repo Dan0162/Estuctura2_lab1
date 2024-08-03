@@ -9,9 +9,48 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Comparator;
+
 
 
 public class App {
+    public static class Pair {
+        long time;
+        Reg reg;
+
+        Pair(long time, Reg reg) {
+            this.time = time;
+            this.reg = reg;
+        }
+
+        @Override
+        public String toString() {
+            return "Reg: {id: " + reg.ID + ", name: " + reg.data + "}, Time: " + time + "ms";
+        }
+    }
+
+    // Function to update top 10 times
+    private static void updateTop10(List<Pair> top10List, long time, Reg reg) {
+        Pair pair = new Pair(time, reg);
+        if (top10List.size() < 10) {
+            top10List.add(pair);
+        } else if (time < top10List.get(9).time) {
+            top10List.set(9, pair);
+        }
+        top10List.sort(Comparator.comparingLong(p -> p.time));
+    }
+
+    private static void updateTop10Slowest(List<Pair> top10List, long time, Reg reg) {
+        Pair pair = new Pair(time, reg);
+        if (top10List.size() < 10) {
+            top10List.add(pair);
+        } else if (time > top10List.get(9).time) {
+            top10List.set(9, pair);
+        }
+        top10List.sort(Comparator.comparingLong((Pair p) -> p.time).reversed());
+    }
+
+    
     public static void main(String[] args) throws Exception {
         
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader("C:\\Users\\Dany\\Downloads\\operaciones.txt"))) {
@@ -56,25 +95,36 @@ public class App {
             long tiempototBastdel = 0;
             long tiempototBastbus = 0;
 
-            List<Long> AVLInsertTimes = new ArrayList<>();
-            List<Long> AVLDeleteTimes = new ArrayList<>();
-            List<Long> AVLSearchTimes = new ArrayList<>();
+            List<Pair> Top10BestInsAVL = new ArrayList<>();
+            List<Pair> Top10BestInsB = new ArrayList<>();
+            List<Pair> Top10BestInsBPlus = new ArrayList<>();
+            List<Pair> Top10BestInsBAst = new ArrayList<>();
+
+            List<Pair> Top10BestDelAVL = new ArrayList<>();
+            List<Pair> Top10BestDelB = new ArrayList<>();
+            List<Pair> Top10BestDelBPlus = new ArrayList<>();
+            List<Pair> Top10BestDelBAst = new ArrayList<>();
+
+            List<Pair> Top10BestBusAVL = new ArrayList<>();
+            List<Pair> Top10BestBusB = new ArrayList<>();
+            List<Pair> Top10BestBusBPlus = new ArrayList<>();
+            List<Pair> Top10BestBusBAst = new ArrayList<>();
 
 
-            List<Long> BInsertTimes = new ArrayList<>();
-            List<Long> BDeleteTimes = new ArrayList<>();
-            List<Long> BSearchTimes = new ArrayList<>();
+            List<Pair> Top10SlowestInsAVL = new ArrayList<>();
+            List<Pair> Top10SlowestInsB = new ArrayList<>();
+            List<Pair> Top10SlowestInsBPlus = new ArrayList<>();
+            List<Pair> Top10SlowestInsBAst = new ArrayList<>();
 
+            List<Pair> Top10SlowestDelAVL = new ArrayList<>();
+            List<Pair> Top10SlowestDelB = new ArrayList<>();
+            List<Pair> Top10SlowestDelBPlus = new ArrayList<>();
+            List<Pair> Top10SlowestDelBAst = new ArrayList<>();
 
-            List<Long> BPlusInsertTimes = new ArrayList<>();
-            List<Long> BPlusDeleteTimes = new ArrayList<>();
-            List<Long> BPlusSearchTimes = new ArrayList<>();
-
-
-            List<Long> BastInsertTimes = new ArrayList<>();
-            List<Long> BastDeleteTimes = new ArrayList<>();
-            List<Long> BastSearchTimes = new ArrayList<>();
-            
+            List<Pair> Top10SlowestBusAVL = new ArrayList<>();
+            List<Pair> Top10SlowestBusB = new ArrayList<>();
+            List<Pair> Top10SlowestBusBPlus = new ArrayList<>();
+            List<Pair> Top10SlowestBusBAst = new ArrayList<>();
 
             while ((line = bufferedReader.readLine()) != null) {
                 Matcher matcher = pattern.matcher(line);
@@ -87,6 +137,8 @@ public class App {
                         timediff = finishtime - starttime;
                         tiempototAVLins += timediff;
                         totalins++;
+                        updateTop10(Top10BestInsAVL, timediff, new Reg(Integer.parseInt(matcher.group(2)), matcher.group(3)));
+                        updateTop10Slowest(Top10SlowestInsAVL, timediff, new Reg(Integer.parseInt(matcher.group(2)), matcher.group(3)));
                         AVLLogs += starttime + "," + finishtime + "," + timediff + ",Insertar," + "N/A," + Integer.parseInt(matcher.group(2)) + "," + matcher.group(3) + "\n";
 
                         starttime = System.currentTimeMillis();
@@ -94,6 +146,8 @@ public class App {
                         finishtime = System.currentTimeMillis();
                         timediff = finishtime - starttime;
                         tiempototBplusins += timediff;
+                        updateTop10(Top10BestInsBPlus, timediff, new Reg(Integer.parseInt(matcher.group(2)), matcher.group(3)));
+                        updateTop10Slowest(Top10SlowestInsBPlus, timediff, new Reg(Integer.parseInt(matcher.group(2)), matcher.group(3))); 
                         BPlusLogs += starttime + "," + finishtime + "," + timediff + ",Insertar," + "N/A," + Integer.parseInt(matcher.group(2)) + "," + matcher.group(3) + "\n";
 
                         starttime = System.currentTimeMillis();
@@ -101,6 +155,8 @@ public class App {
                         finishtime = System.currentTimeMillis();
                         timediff = finishtime - starttime;
                         tiempototBins += timediff;
+                        updateTop10(Top10BestInsB, timediff, new Reg(Integer.parseInt(matcher.group(2)), matcher.group(3))); 
+                        updateTop10Slowest(Top10SlowestInsB, timediff, new Reg(Integer.parseInt(matcher.group(2)), matcher.group(3)));
                         BLogs += starttime + "," + finishtime + "," + timediff + ",Insertar," + "N/A," + Integer.parseInt(matcher.group(2)) + "," + matcher.group(3) + "\n";
                     
                         starttime = System.currentTimeMillis();
@@ -108,6 +164,8 @@ public class App {
                         finishtime = System.currentTimeMillis();
                         timediff = finishtime - starttime;
                         tiempototBastins += timediff;
+                        updateTop10(Top10BestInsBAst, timediff, new Reg(Integer.parseInt(matcher.group(2)), matcher.group(3))); 
+                        updateTop10Slowest(Top10SlowestInsBAst, timediff, new Reg(Integer.parseInt(matcher.group(2)), matcher.group(3)));
                         BastLogs += starttime + "," + finishtime + "," + timediff + ",Insertar," + "N/A," + Integer.parseInt(matcher.group(2)) + "," + matcher.group(3) + "\n";
                     
                     
@@ -117,17 +175,21 @@ public class App {
                         LeAVLtree.deleteNode(LeAVLtree.root, new Reg(Integer.parseInt(matcher.group(5)), "null")); //AVL
                         finishtime = System.currentTimeMillis();
                         timediff = finishtime - starttime;
-                        tiempototAVLdel += timediff;
+                        tiempototAVLdel += timediff;                         
                         totaldel++;
                         if (LeAVLtree.found == true){
                             AVLLogs += starttime + "," + finishtime + "," + timediff + ",Eliminar," + "Si," + LeAVLtree.foundata.ID + "," + LeAVLtree.foundata.data + "\n";
+                            updateTop10(Top10BestDelAVL, timediff, new Reg(LeAVLtree.foundata.ID, LeAVLtree.foundata.data));
+                            updateTop10Slowest(Top10SlowestDelAVL, timediff, new Reg(LeAVLtree.foundata.ID, LeAVLtree.foundata.data));
                             LeAVLtree.found = false;
                             LeAVLtree.foundata = null;
+
                         }
                         else{
                             AVLLogs += starttime + "," + finishtime + "," + timediff + ",Eliminar," + "No," + Integer.parseInt(matcher.group(5)) + "," + "N/A" + "\n";
                             LeAVLtree.found = false;
                             LeAVLtree.foundata = null;
+                            
                         }
 
                         starttime = System.currentTimeMillis();
@@ -137,13 +199,17 @@ public class App {
                         tiempototBplusdel += timediff;
                         if (LeBPlusTree.found == true){
                             BPlusLogs += starttime + "," + finishtime + "," + timediff + ",Eliminar," + "Si," + LeBPlusTree.foundata.ID + "," + LeBPlusTree.foundata.data + "\n";
+                            updateTop10(Top10BestDelBPlus, timediff, new Reg(LeBPlusTree.foundata.ID, LeBPlusTree.foundata.data));
+                            updateTop10Slowest(Top10SlowestDelBPlus, timediff, new Reg(LeBPlusTree.foundata.ID, LeBPlusTree.foundata.data));
                             LeBPlusTree.found = false;
                             LeBPlusTree.foundata = null;
+                            
                         }
                         else{
                             BPlusLogs += starttime + "," + finishtime + "," + timediff + ",Eliminar," + "No," + Integer.parseInt(matcher.group(5)) + "," + "N/A" + "\n";
                             LeBPlusTree.found = false;
                             LeBPlusTree.foundata = null;
+                            
                         }
 
                         
@@ -154,6 +220,8 @@ public class App {
                         tiempototBdel += timediff;
                         if (LeBTree.found == true){
                             BLogs += starttime + "," + finishtime + "," + timediff + ",Eliminar," + "Si," + LeBTree.foundata.ID + "," + LeBTree.foundata.data + "\n";
+                            updateTop10(Top10BestDelB, timediff, new Reg(LeBTree.foundata.ID, LeBTree.foundata.data));
+                            updateTop10Slowest(Top10SlowestDelB, timediff, new Reg(LeBTree.foundata.ID, LeBTree.foundata.data));
                             LeBTree.found = false;
                             LeBTree.foundata = null;
                         }
@@ -161,6 +229,7 @@ public class App {
                             BLogs += starttime + "," + finishtime + "," + timediff + ",Eliminar," + "No," + Integer.parseInt(matcher.group(5)) + "," + "N/A" + "\n";
                             LeBTree.found = false;
                             LeBTree.foundata = null;
+                            
                         }
 
                         starttime = System.currentTimeMillis();
@@ -170,6 +239,8 @@ public class App {
                         tiempototBastdel += timediff;
                         if (LeBStarTree.found == true){
                             BastLogs += starttime + "," + finishtime + "," + timediff + ",Eliminar," + "Si," + LeBStarTree.foundata.ID + "," + LeBStarTree.foundata.data + "\n";
+                            updateTop10(Top10BestDelBAst, timediff, new Reg(LeBStarTree.foundata.ID, LeBStarTree.foundata.data));
+                            updateTop10Slowest(Top10SlowestDelBAst, timediff, new Reg(LeBStarTree.foundata.ID, LeBStarTree.foundata.data));
                             LeBStarTree.found = false;
                             LeBStarTree.foundata = null;
                         }
@@ -189,6 +260,8 @@ public class App {
                         totalbus++;
                         if (LeAVLtree.found == true){
                             AVLLogs += starttime + "," + finishtime + "," + timediff + ",Buscar," + "Si," + LeAVLtree.foundata.ID + "," + LeAVLtree.foundata.data + "\n";
+                            updateTop10(Top10BestBusAVL, timediff, new Reg(LeAVLtree.foundata.ID, LeAVLtree.foundata.data));
+                            updateTop10Slowest(Top10SlowestBusAVL, timediff, new Reg(LeAVLtree.foundata.ID, LeAVLtree.foundata.data));
                             LeAVLtree.found = false;
                             LeAVLtree.foundata = null;
                         }
@@ -205,6 +278,8 @@ public class App {
                         tiempototBplusbus += timediff;
                         if (LeBPlusTree.found == true){
                             BPlusLogs += starttime + "," + finishtime + "," + timediff + ",Buscar," + "Si," + LeBPlusTree.foundata.ID + "," + LeBPlusTree.foundata.data + "\n";
+                            updateTop10(Top10BestBusBPlus, timediff, new Reg(LeBPlusTree.foundata.ID, LeBPlusTree.foundata.data));
+                            updateTop10Slowest(Top10SlowestBusBPlus, timediff, new Reg(LeBPlusTree.foundata.ID, LeBPlusTree.foundata.data));
                             LeBPlusTree.found = false;
                             LeBPlusTree.foundata = null;
                         }
@@ -221,6 +296,8 @@ public class App {
                         tiempototBbus += timediff;
                         if (LeBTree.found == true){
                             BLogs += starttime + "," + finishtime + "," + timediff + ",Buscar," + "Si," + LeBTree.foundata.ID + "," + LeBTree.foundata.data + "\n";
+                            updateTop10(Top10BestBusB, timediff, new Reg(LeBTree.foundata.ID, LeBTree.foundata.data));
+                            updateTop10Slowest(Top10SlowestBusB, timediff, new Reg(LeBTree.foundata.ID, LeBTree.foundata.data));
                             LeBTree.found = false;
                             LeBTree.foundata = null;
                         }
@@ -237,6 +314,8 @@ public class App {
                         tiempototBastbus += timediff;
                         if (LeBStarTree.found == true){
                             BastLogs += starttime + "," + finishtime + "," + timediff + ",Buscar," + "Si," + LeBStarTree.foundata.ID + "," + LeBStarTree.foundata.data + "\n";
+                            updateTop10(Top10BestBusBAst, timediff, new Reg(LeBStarTree.foundata.ID, LeBStarTree.foundata.data));
+                            updateTop10Slowest(Top10SlowestBusBAst, timediff, new Reg(LeBStarTree.foundata.ID, LeBStarTree.foundata.data));
                             LeBStarTree.found = false;
                             LeBStarTree.foundata = null;
                         }
@@ -267,7 +346,19 @@ public class App {
             writer = new BufferedWriter(new FileWriter("logs\\log-Bast-operaciones-"+finishtimeEverything.format(formatter).toString()+".csv"));
             writer.write(BastLogs);
             writer.close();
+            writer = new BufferedWriter(new FileWriter("logs\\log-estadisticas-"+finishtimeEverything.format(formatter).toString()+".txt"));
+            writer.write("\nTop 10 Inserciones AVL(ms):" + Top10BestInsAVL.toString()+"\n" + "\nTop 10 Búsquedas AVL(ms):" + Top10BestBusAVL.toString()+"\n" + "\nTop 10 EliminacionesAVL(ms):" + Top10BestDelAVL.toString()+"\n");
+            writer.write("\nTop 10 peores Inserciones AVL(ms):" + Top10SlowestInsAVL.toString()+"\n" + "\nTop 10 peores Búsquedas AVL(ms):" + Top10SlowestBusAVL.toString()+"\n" + "\nTop 10 peores EliminacionesAVL(ms):" + Top10BestDelAVL.toString()+"\n\n");
+            
+            writer.write("\nTop 10 Inserciones B(ms):" + Top10BestInsB.toString()+"\n" + "\nTop 10 Búsquedas B(ms):" + Top10BestBusB.toString()+"\n" + "\nTop 10 EliminacionesB(ms):" + Top10BestDelB.toString()+"\n");
+            writer.write("\nTop 10 peores Inserciones B(ms):" + Top10SlowestInsB.toString()+"\n" + "\nTop 10 peores Búsquedas B(ms):" + Top10SlowestBusB.toString()+"\n" + "\nTop 10 peores EliminacionesB(ms):" + Top10BestDelB.toString()+"\n\n");
+            
+            writer.write("\nTop 10 Inserciones BPlus(ms):" + Top10BestInsBPlus.toString()+"\n" + "\nTop 10 Búsquedas BPlus(ms):" + Top10BestBusBPlus.toString()+"\n" + "\nTop 10 EliminacionesBPlus(ms):" + Top10BestDelBPlus.toString()+"\n");
+            writer.write("\nTop 10 peores Inserciones BPlus(ms):" + Top10SlowestInsBPlus.toString()+"\n" + "\nTop 10 peores Búsquedas BPlus(ms):" + Top10SlowestBusBPlus.toString()+"\n" + "\nTop 10 peores EliminacionesBPlus(ms):" + Top10BestDelBPlus.toString()+"\n\n");
 
+            writer.write("\nTop 10 Inserciones BAst(ms):" + Top10BestInsBAst.toString()+"\n" + "\nTop 10 Búsquedas BAst(ms):" + Top10BestBusBAst.toString()+"\n" + "\nTop 10 EliminacionesBAst(ms):" + Top10BestDelBAst.toString()+"\n");
+            writer.write("\nTop 10 peores Inserciones BAst(ms):" + Top10SlowestInsBAst.toString()+"\n" + "\nTop 10 peores Búsquedas BAst(ms):" + Top10SlowestBusBAst.toString()+"\n" + "\nTop 10 peores EliminacionesBAst(ms):" + Top10BestDelBAst.toString()+"\n\n");
+            writer.close();
 
             System.out.println("AVL tiempos promedios(ms):\nInserción:" + tiempototAVLins/totalins + "\nBúsqueda:" + tiempototAVLbus/totalbus + "\nEliminación:" + tiempototAVLdel/totaldel+"\n\n");
             System.out.println("B tiempos promedios(ms):\nInserción:" + tiempototBins/totalins + "\nBúsqueda:" + tiempototBbus/totalbus + "\nEliminación:" + tiempototBdel/totaldel+"\n\n");
@@ -278,6 +369,37 @@ public class App {
             System.out.println("B tiempos totales(ms):\nInserción:" + tiempototBins + "\nBúsqueda:" + tiempototBbus + "\nEliminación:" + tiempototBdel+"\n\n");
             System.out.println("B+ tiempos totales(ms):\nInserción:" + tiempototBplusins + "\nBúsqueda:" + tiempototBplusbus + "\nEliminación:" + tiempototBplusdel+"\n\n");
             System.out.println("B* tiempos totales(ms):\nInserción:" + tiempototBastins + "\nBúsqueda:" + tiempototBastbus + "\nEliminación:" + tiempototBastdel+"\n\n");
+       
+            System.out.println("Top 10 Inserciones AVL(ms):" + Top10BestInsAVL.toString()+"\n");
+            System.out.println("Top 10 Inserciones B(ms):" + Top10BestInsB.toString()+"\n");
+            System.out.println("Top 10 Inserciones BPlus(ms):" + Top10BestInsBPlus.toString()+"\n");
+            System.out.println("Top 10 Inserciones BAst(ms):" + Top10BestInsBAst.toString()+"\n\n");
+
+            System.out.println("Top 10 Búsquedas AVL(ms):" + Top10BestBusAVL.toString()+"\n");
+            System.out.println("Top 10 Búsquedas B(ms):" + Top10BestBusB.toString()+"\n");
+            System.out.println("Top 10 Búsquedas BPlus(ms):" + Top10BestBusBPlus.toString()+"\n");
+            System.out.println("Top 10 Búsquedas BAst(ms):" + Top10BestBusBAst.toString()+"\n\n");
+
+            System.out.println("Top 10 Eliminaciones AVL(ms):" + Top10BestDelAVL.toString()+"\n");
+            System.out.println("Top 10 Eliminaciones B(ms):" + Top10BestDelB.toString()+"\n");
+            System.out.println("Top 10 Eliminaciones BPlus(ms):" + Top10BestDelBPlus.toString()+"\n");
+            System.out.println("Top 10 Eliminaciones BAst(ms):" + Top10BestDelBAst.toString()+"\n");
+
+            System.out.println("Top 10 peores Inserciones AVL(ms):" + Top10SlowestInsAVL.toString()+"\n");
+            System.out.println("Top 10 peores Inserciones B(ms):" + Top10SlowestInsB.toString()+"\n");
+            System.out.println("Top 10 peores Inserciones BPlus(ms):" + Top10SlowestInsBPlus.toString()+"\n");
+            System.out.println("Top 10 peores Inserciones BAst(ms):" + Top10SlowestInsBAst.toString()+"\n\n");
+
+            System.out.println("Top 10 peores Búsquedas AVL(ms):" + Top10SlowestBusAVL.toString()+"\n");
+            System.out.println("Top 10 peores Búsquedas B(ms):" + Top10SlowestBusB.toString()+"\n");
+            System.out.println("Top 10 peores Búsquedas BPlus(ms):" + Top10SlowestBusBPlus.toString()+"\n");
+            System.out.println("Top 10 peores Búsquedas BAst(ms):" + Top10SlowestBusBAst.toString()+"\n\n");
+
+            System.out.println("Top 10 peores Eliminaciones AVL(ms):" + Top10SlowestDelAVL.toString()+"\n");
+            System.out.println("Top 10 peores Eliminaciones B(ms):" + Top10SlowestDelB.toString()+"\n");
+            System.out.println("Top 10 peores Eliminaciones BPlus(ms):" + Top10SlowestDelBPlus.toString()+"\n");
+            System.out.println("Top 10 peoresEliminaciones BAst(ms):" + Top10SlowestDelBAst.toString()+"\n");
+
         }
 
     }
