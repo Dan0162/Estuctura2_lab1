@@ -71,7 +71,7 @@ public class App {
                         finishtime = System.currentTimeMillis();
                         timediff = finishtime - starttime;
                         if (LeAVLtree.found == true){
-                            AVLLogs += starttime + "," + finishtime + "," + timediff + ",Eliminar," + "Si," + LeAVLtree.foundata.ID + "," + LeAVLtree.foundata.name + "\n";
+                            AVLLogs += starttime + "," + finishtime + "," + timediff + ",Eliminar," + "Si," + LeAVLtree.foundata.ID + "," + LeAVLtree.foundata.data + "\n";
                             LeAVLtree.found = false;
                             LeAVLtree.foundata = null;
                         }
@@ -82,18 +82,70 @@ public class App {
                         }
 
                         starttime = System.currentTimeMillis();
-                        LeBPlusTree.delete(Integer.parseInt(matcher.group(5)));//B+
+                        LeBPlusTree.delete(new Reg(Integer.parseInt(matcher.group(5)), null));;//B+
                         finishtime = System.currentTimeMillis();
                         timediff = finishtime - starttime;
-                        
+                        if (LeBPlusTree.found == true){
+                            BPlusLogs += starttime + "," + finishtime + "," + timediff + ",Eliminar," + "Si," + LeBPlusTree.foundata.ID + "," + LeBPlusTree.foundata.data + "\n";
+                            LeBPlusTree.found = false;
+                            LeBPlusTree.foundata = null;
+                        }
+                        else{
+                            BPlusLogs += starttime + "," + finishtime + "," + timediff + ",Eliminar," + "No," + Integer.parseInt(matcher.group(5)) + "," + "N/A" + "\n";
+                            LeBPlusTree.found = false;
+                            LeBPlusTree.foundata = null;
+                        }
 
+                        
+                        starttime = System.currentTimeMillis();
                         LeBTree.remove(Integer.parseInt(matcher.group(5)));//B
+                        finishtime = System.currentTimeMillis();
+                        timediff = finishtime - starttime;
+                        if (LeBTree.found == true){
+                            BLogs += starttime + "," + finishtime + "," + timediff + ",Eliminar," + "Si," + LeBTree.foundata.ID + "," + LeBTree.foundata.data + "\n";
+                            LeBTree.found = false;
+                            LeBTree.foundata = null;
+                        }
+                        else{
+                            BLogs += starttime + "," + finishtime + "," + timediff + ",Eliminar," + "No," + Integer.parseInt(matcher.group(5)) + "," + "N/A" + "\n";
+                            LeBTree.found = false;
+                            LeBTree.foundata = null;
+                        }
+
+                        starttime = System.currentTimeMillis();
                         LeBStarTree.delete(Integer.parseInt(matcher.group(5)));//B*
+                        finishtime = System.currentTimeMillis();
+                        timediff = finishtime - starttime;
+                        if (LeBStarTree.found == true){
+                            BastLogs += starttime + "," + finishtime + "," + timediff + ",Eliminar," + "Si," + LeBStarTree.foundata.ID + "," + LeBStarTree.foundata.data + "\n";
+                            LeBStarTree.found = false;
+                            LeBStarTree.foundata = null;
+                        }
+                        else{
+                            BastLogs += starttime + "," + finishtime + "," + timediff + ",Eliminar," + "No," + Integer.parseInt(matcher.group(5)) + "," + "N/A" + "\n";
+                            LeBStarTree.found = false;
+                            LeBStarTree.foundata = null;
+                        }
 
                     }
                     else if (matcher.group(6) != null){ //Search
+                        starttime = System.currentTimeMillis();
                         LeAVLtree.search(LeAVLtree.root, Integer.parseInt(matcher.group(7))); //AVL
-                        LeBPlusTree.search(Integer.parseInt(matcher.group(7))); //B+
+                        finishtime = System.currentTimeMillis();
+                        timediff = finishtime - starttime;
+                        if (LeAVLtree.found == true){
+                            AVLLogs += starttime + "," + finishtime + "," + timediff + ",Buscar," + "Si," + LeAVLtree.foundata.ID + "," + LeAVLtree.foundata.data + "\n";
+                            LeAVLtree.found = false;
+                            LeAVLtree.foundata = null;
+                        }
+                        else{
+                            AVLLogs += starttime + "," + finishtime + "," + timediff + ",Buscar," + "No," + Integer.parseInt(matcher.group(7)) + "," + "N/A" + "\n";
+                            LeAVLtree.found = false;
+                            LeAVLtree.foundata = null;
+                        }
+
+
+                        LeBPlusTree.search(new Reg(Integer.parseInt(matcher.group(7)),null)); //B+
                         LeBTree.search(Integer.parseInt(matcher.group(7)));//B   
                         //LeBStarTree.search(new Reg(Integer.parseInt(matcher.group(7)), "null"));//B*          
 
@@ -103,19 +155,19 @@ public class App {
             }
 
             LocalDateTime finishtimeEverything = java.time.LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
+            //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
 
             System.out.println(finishtimeEverything.toString());
-            BufferedWriter writer = new BufferedWriter(new FileWriter("logs\\log-AVL-operaciones-"+finishtimeEverything.format(formatter).toString()+ ".csv"));
+            BufferedWriter writer = new BufferedWriter(new FileWriter("logs\\log-AVL-operaciones-.csv"));
             writer.write(AVLLogs);
             writer.close();
-            writer = new BufferedWriter(new FileWriter("logs\\log-B-operaciones-"+finishtimeEverything.format(formatter).toString()+ ".csv"));
+            writer = new BufferedWriter(new FileWriter("logs\\log-B-operaciones-.csv"));
             writer.write(BLogs);
             writer.close();
-            writer = new BufferedWriter(new FileWriter("logs\\log-B+-operaciones-"+finishtimeEverything.format(formatter).toString()+ ".csv"));
+            writer = new BufferedWriter(new FileWriter("logs\\log-B+-operaciones-.csv"));
             writer.write(BPlusLogs);
             writer.close();
-            writer = new BufferedWriter(new FileWriter("logs\\log-Bast-operaciones-"+finishtimeEverything.format(formatter).toString()+ ".csv"));
+            writer = new BufferedWriter(new FileWriter("logs\\log-Bast-operaciones-.csv"));
             writer.write(BastLogs);
             writer.close();
         }

@@ -128,47 +128,79 @@ class AVLTree {
 
     // Function to delete a node with a given key in the AVL tree and return the new root
     Node deleteNode(Node root, Reg key) {
+        // Step 1: Perform standard BST delete
         if (root == null) {
             found = false;
             foundata = null;
             return root;
         }
     
+        // If the key to be deleted is smaller than the root's key, then it lies in left subtree
         if (key.ID < root.data.ID) {
             root.left = deleteNode(root.left, key);
-        } else if (key.ID > root.data.ID) {
+        }
+        // If the key to be deleted is greater than the root's key, then it lies in right subtree
+        else if (key.ID > root.data.ID) {
             root.right = deleteNode(root.right, key);
-        } else {
-            found = true;
-            foundata = root.data;
+        }
+        // If key is same as root's key, then this is the node to be deleted
+        else {
+            if (found == false){
+                found = true;
+                foundata = root.data;
+            }
+            
     
+            // Node with only one child or no child
             if ((root.left == null) || (root.right == null)) {
-                Node temp = root.left != null ? root.left : root.right;
-                root = temp; // this works even if temp is null
+                Node temp = (root.left != null) ? root.left : root.right;
+    
+                // No child case
+                if (temp == null) {
+                    temp = root;
+                    root = null;
+                } else { // One child case
+                    root = temp; // Copy the contents of the non-empty child
+                }
             } else {
+                // Node with two children: Get the inorder successor (smallest in the right subtree)
                 Node temp = minValueNode(root.right);
+    
+                // Copy the inorder successor's data to this node
                 root.data = temp.data;
+    
+                // Delete the inorder successor
                 root.right = deleteNode(root.right, temp.data);
             }
         }
     
+        // If the tree had only one node then return
         if (root == null)
             return root;
     
+        // Step 2: Update the height of the current node
         root.height = 1 + max(height(root.left), height(root.right));
+    
+        // Step 3: Get the balance factor of this node to check whether this node became unbalanced
         int balance = getBalance(root);
     
+        // If this node becomes unbalanced, then there are 4 cases
+    
+        // Left Left Case
         if (balance > 1 && getBalance(root.left) >= 0)
             return rightRotate(root);
     
+        // Left Right Case
         if (balance > 1 && getBalance(root.left) < 0) {
             root.left = leftRotate(root.left);
             return rightRotate(root);
         }
     
+        // Right Right Case
         if (balance < -1 && getBalance(root.right) <= 0)
             return leftRotate(root);
     
+        // Right Left Case
         if (balance < -1 && getBalance(root.right) > 0) {
             root.right = rightRotate(root.right);
             return leftRotate(root);
@@ -176,19 +208,24 @@ class AVLTree {
     
         return root;
     }
-    
 
     // Function to search for a node with a given ID in the AVL tree
     Node search(Node root, int ID) {
+
         // Base cases: root is null or key is present at root
-        if (root == null || root.data.ID == ID)
+        if (root == null){
             return root;
-
-        // Key is greater than root's key
-        if (root.data.ID < ID)
+        }
+        else if (root.data.ID == ID){
+            found = true;
+            foundata = root.data;
+            return root;
+        }
+        else if (root.data.ID < ID){
             return search(root.right, ID);
-
-        // Key is smaller than root's key
-        return search(root.left, ID);
+        }
+        else{
+            return search(root.left, ID);
+        }
     }
 }

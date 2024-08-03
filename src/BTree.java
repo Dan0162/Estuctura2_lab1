@@ -1,5 +1,3 @@
-
-
 class BTreeNode {
     Reg[] keys; // Array to store keys
     int t; // Minimum degree (defines the range for number of keys)
@@ -17,19 +15,24 @@ class BTreeNode {
     }
 
     // Function to search given key in subtree rooted with this node
-    public BTreeNode search(int ID) {
+    public BTreeNode search(int ID, BTree tree) {
         int i = 0;
 
         while (i < n && ID > keys[i].ID)
             i++;
 
-        if (i < n && keys[i].ID == ID)
+        if (i < n && keys[i].ID == ID){
+            if (tree.found == false){
+                tree.found = true;
+                tree.foundata = keys[i];
+            }
             return this;
+        }
 
         if (leaf)
             return null;
 
-        return children[i].search(ID);
+        return children[i].search(ID, tree);
     }
 
     // Function to insert a new key in subtree rooted with this node
@@ -85,16 +88,22 @@ class BTreeNode {
     }
 
     // Function to remove a key from the subtree rooted with this node
-    public void remove(int ID) {
+    public void remove(int ID, BTree tree) {
         int idx = findKey(ID);
 
         if (idx < n && keys[idx].ID == ID) {
+            if (tree.found == false){
+            tree.found = true;
+            tree.foundata = keys[idx];
+            }
             if (leaf)
                 removeFromLeaf(idx);
             else
-                removeFromNonLeaf(idx);
+                removeFromNonLeaf(idx, tree);
         } else {
             if (leaf) {
+                tree.found = false;
+                tree.foundata = null;
                 System.out.println("The key " + ID + " does not exist in the tree.");
                 return;
             }
@@ -105,9 +114,9 @@ class BTreeNode {
                 fill(idx);
 
             if (flag && idx > n)
-                children[idx - 1].remove(ID);
+                children[idx - 1].remove(ID, tree);
             else
-                children[idx].remove(ID);
+                children[idx].remove(ID, tree);
         }
     }
 
@@ -117,20 +126,20 @@ class BTreeNode {
         n--;
     }
 
-    private void removeFromNonLeaf(int idx) {
+    private void removeFromNonLeaf(int idx, BTree tree) {
         Reg k = keys[idx];
 
         if (children[idx].n >= t) {
             Reg pred = getPred(idx);
             keys[idx] = pred;
-            children[idx].remove(pred.ID);
+            children[idx].remove(pred.ID, tree);
         } else if (children[idx + 1].n >= t) {
             Reg succ = getSucc(idx);
             keys[idx] = succ;
-            children[idx + 1].remove(succ.ID);
+            children[idx + 1].remove(succ.ID, tree);
         } else {
             merge(idx);
-            children[idx].remove(k.ID);
+            children[idx].remove(k.ID, tree);
         }
     }
 
@@ -168,7 +177,7 @@ class BTreeNode {
 
         child.keys[0] = keys[idx - 1];
 
-        if (!leaf)
+        if (!child.leaf)
             child.children[0] = sibling.children[sibling.n];
 
         keys[idx - 1] = sibling.keys[sibling.n - 1];
@@ -256,13 +265,18 @@ public class BTree {
     private BTreeNode root;
     private int t;
 
+    Reg foundata;
+    boolean found = false;
+
     public BTree(int t) {
         this.t = t;
         root = null;
     }
 
     public BTreeNode search(int ID) {
-        return (root == null) ? null : root.search(ID);
+        found = false;
+        foundata = null;
+        return (root == null) ? null : root.search(ID, this);
     }
 
     public void insert(Reg reg) {
@@ -289,12 +303,15 @@ public class BTree {
     }
 
     public void remove(int ID) {
+        found = false;
+        foundata = null;
+
         if (root == null) {
             System.out.println("The tree is empty.");
             return;
         }
 
-        root.remove(ID);
+        root.remove(ID, this);
 
         if (root.n == 0) {
             root = (root.leaf) ? null : root.children[0];
@@ -306,5 +323,4 @@ public class BTree {
             root.printInOrder();
         System.out.println();
     }
-    
 }

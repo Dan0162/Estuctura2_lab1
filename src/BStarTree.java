@@ -4,6 +4,9 @@ public class BStarTree {
     private int minDegree;
     private Node root;
 
+    Reg foundata;
+    boolean found = false;
+
     public BStarTree(int minDegree) {
         this.minDegree = minDegree;
         this.root = new Node(true);
@@ -93,26 +96,50 @@ public class BStarTree {
 
     // Method to search for a key in the B* tree
     public Integer search(Reg key) {
+        // Initialize the search starting from the root node
         return search(root, key);
     }
-
+    
     private Integer search(Node node, Reg key) {
         int i = 0;
+    
+        // Traverse the keys in the current node to find the correct position or match
         while (i < node.keys.size() && key.ID > node.keys.get(i).ID) {
             i++;
         }
+    
+        // If the key matches one in the current node, return the associated value
         if (i < node.keys.size() && key.ID == node.keys.get(i).ID) {
+            found = true;
+            foundata = node.keys.get(i);
             return node.values.get(i);
         }
+    
+        // If the current node is a leaf and the key isn't found, return null
         if (node.leaf) {
+            found = false;
+            foundata = null;
             return null;
-        } else {
+        }
+    
+        // If not a leaf, search the appropriate child
+        // Ensure i is within bounds before accessing children
+        if (i < node.children.size()) {
             return search(node.children.get(i), key);
         }
+    
+        // If out of bounds, return null
+        return null;
     }
+    
+    
+    
+    
 
     // Method to delete a key from the B* tree
     public void delete(int ID) {
+        found = false;
+        foundata = null;
         delete(root, ID);
         if (root.keys.size() == 0 && !root.leaf) {
             root = root.children.get(0);
@@ -123,6 +150,11 @@ public class BStarTree {
         int idx = findKey(node, ID);
 
         if (idx < node.keys.size() && node.keys.get(idx).ID == ID) {
+            if (found == false){
+                found = true;
+                foundata = node.keys.get(idx);
+            }
+            
             if (node.leaf) {
                 node.keys.remove(idx);
             } else {
@@ -130,6 +162,8 @@ public class BStarTree {
             }
         } else {
             if (node.leaf) {
+                found = false;
+                foundata = null;
                 System.out.println("The key " + ID + " is not present in the tree.");
                 return;
             }
@@ -234,5 +268,4 @@ public class BStarTree {
 
         node.children.remove(idx + 1);
     }
-
 }
