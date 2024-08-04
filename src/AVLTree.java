@@ -172,15 +172,20 @@ class AVLTree {
             return root;
         }
         else if (root.data.ID == ID){
-            found = true;
+            if (found == false){
+                found = true;
             foundata = root.data;
+            }            
             return root;
         }
-        else if (root.data.ID < ID){
+        else if (ID > root.data.ID){
             return search(root.right, ID);
         }
-        else{
+        else if (ID < root.data.ID){
             return search(root.left, ID);
+        }
+        else{
+            return null;
         }
     }
 }

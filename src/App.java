@@ -53,6 +53,7 @@ public class App {
     
     public static void main(String[] args) throws Exception {
         
+        
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader("src\\operaciones.txt"))) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             String line;
@@ -272,7 +273,7 @@ public class App {
                         }
 
                         starttime = System.currentTimeMillis();
-                        LeBPlusTree.search(new Reg(Integer.parseInt(matcher.group(7)),null)); //B+ No funciona
+                        LeBPlusTree.search(new Reg(Integer.parseInt(matcher.group(7)),null)); //B+
                         finishtime = System.currentTimeMillis();
                         timediff = finishtime - starttime;
                         tiempototBplusbus += timediff;

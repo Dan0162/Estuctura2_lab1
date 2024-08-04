@@ -144,10 +144,14 @@ class BPlusTree {
     }
 
     public boolean search(Reg key) {
-        BPlusTreeNode node = findLeaf(key);
-        int pos = Collections.binarySearch(node.keys, key);
+        BPlusTreeNode leaf = findLeaf(key);
+        int pos = Collections.binarySearch(leaf.keys, key);
+        if (pos >= 0) {
+            found = true;
+            foundata = leaf.keys.get(pos);
+        }
         return pos >= 0;
-    }
+    }    
 
     public void printTree() {
         printNode(root, 0);
