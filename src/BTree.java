@@ -14,7 +14,6 @@ class BTreeNode {
         n = 0;
     }
 
-    // Function to search given key in subtree rooted with this node
     public BTreeNode search(int ID, BTree tree) {
         int i = 0;
 
@@ -35,7 +34,6 @@ class BTreeNode {
         return children[i].search(ID, tree);
     }
 
-    // Function to insert a new key in subtree rooted with this node
     public void insertNonFull(Reg reg) {
         int i = n - 1;
 
@@ -60,7 +58,6 @@ class BTreeNode {
         }
     }
 
-    // Function to split the child node
     public void splitChild(int i, BTreeNode y) {
         BTreeNode z = new BTreeNode(y.t, y.leaf);
         z.n = t - 1;
@@ -87,7 +84,6 @@ class BTreeNode {
         n++;
     }
 
-    // Function to remove a key from the subtree rooted with this node
     public void remove(int ID, BTree tree) {
         int idx = findKey(ID);
 

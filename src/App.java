@@ -25,7 +25,7 @@ public class App {
 
         @Override
         public String toString() {
-            return "Reg: {id: " + reg.ID + ", name: " + reg.data + "}, Time: " + time + "ms";
+            return "\n[id: " + reg.ID + ", name: " + reg.data + "]Time: " + time + "ms";
         }
     }
 
@@ -53,7 +53,7 @@ public class App {
     
     public static void main(String[] args) throws Exception {
         
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("C:\\Users\\Dany\\Downloads\\operaciones.txt"))) {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("src\\operaciones.txt"))) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             String line;
             String patternString = "(Insert):\\{id:(\\d+),nombre:\"([^\"]+)\"\\}" + "|(Delete):\\{id:(\\d+)\\}" + "|(Search):\\{id:(\\d+)\\}";
@@ -333,7 +333,6 @@ public class App {
             LocalDateTime finishtimeEverything = java.time.LocalDateTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
 
-            System.out.println(finishtimeEverything.toString());
             BufferedWriter writer = new BufferedWriter(new FileWriter("logs\\log-AVL-operaciones-"+finishtimeEverything.format(formatter).toString()+".csv"));
             writer.write(AVLLogs);
             writer.close();
@@ -347,6 +346,12 @@ public class App {
             writer.write(BastLogs);
             writer.close();
             writer = new BufferedWriter(new FileWriter("logs\\log-estadisticas-"+finishtimeEverything.format(formatter).toString()+".txt"));
+
+            writer.write("AVL tiempos promedios(ms):\nInserción:" + tiempototAVLins/totalins + "\nBúsqueda:" + tiempototAVLbus/totalbus + "\nEliminación:" + tiempototAVLdel/totaldel+"\n\n");
+            writer.write("B tiempos promedios(ms):\nInserción:" + tiempototBins/totalins + "\nBúsqueda:" + tiempototBbus/totalbus + "\nEliminación:" + tiempototBdel/totaldel+"\n\n");
+            writer.write("B+ tiempos promedios(ms):\nInserción:" + tiempototBplusins/totalins + "\nBúsqueda:" + tiempototBplusbus/totalbus + "\nEliminación:" + tiempototBplusdel/totaldel+"\n\n");
+            writer.write("B* tiempos promedios(ms):\nInserción:" + tiempototBastins/totalins + "\nBúsqueda:" + tiempototBastbus/totalbus + "\nEliminación:" + tiempototBastdel/totaldel+"\n\n");
+            
             writer.write("\nTop 10 Inserciones AVL(ms):" + Top10BestInsAVL.toString()+"\n" + "\nTop 10 Búsquedas AVL(ms):" + Top10BestBusAVL.toString()+"\n" + "\nTop 10 EliminacionesAVL(ms):" + Top10BestDelAVL.toString()+"\n");
             writer.write("\nTop 10 peores Inserciones AVL(ms):" + Top10SlowestInsAVL.toString()+"\n" + "\nTop 10 peores Búsquedas AVL(ms):" + Top10SlowestBusAVL.toString()+"\n" + "\nTop 10 peores EliminacionesAVL(ms):" + Top10BestDelAVL.toString()+"\n\n");
             
@@ -357,7 +362,7 @@ public class App {
             writer.write("\nTop 10 peores Inserciones BPlus(ms):" + Top10SlowestInsBPlus.toString()+"\n" + "\nTop 10 peores Búsquedas BPlus(ms):" + Top10SlowestBusBPlus.toString()+"\n" + "\nTop 10 peores EliminacionesBPlus(ms):" + Top10BestDelBPlus.toString()+"\n\n");
 
             writer.write("\nTop 10 Inserciones BAst(ms):" + Top10BestInsBAst.toString()+"\n" + "\nTop 10 Búsquedas BAst(ms):" + Top10BestBusBAst.toString()+"\n" + "\nTop 10 EliminacionesBAst(ms):" + Top10BestDelBAst.toString()+"\n");
-            writer.write("\nTop 10 peores Inserciones BAst(ms):" + Top10SlowestInsBAst.toString()+"\n" + "\nTop 10 peores Búsquedas BAst(ms):" + Top10SlowestBusBAst.toString()+"\n" + "\nTop 10 peores EliminacionesBAst(ms):" + Top10BestDelBAst.toString()+"\n\n");
+            writer.write("\nTop 10 peores Inserciones BAst(ms):" + Top10SlowestInsBAst.toString()+"\n" + "\nTop 10 peores Búsquedas BAst(ms):" + Top10SlowestBusBAst.toString()+"\n" + "\nTop 10 peores EliminacionesBAst(ms):" + Top10BestDelBAst.toString());
             writer.close();
 
             System.out.println("AVL tiempos promedios(ms):\nInserción:" + tiempototAVLins/totalins + "\nBúsqueda:" + tiempototAVLbus/totalbus + "\nEliminación:" + tiempototAVLdel/totaldel+"\n\n");

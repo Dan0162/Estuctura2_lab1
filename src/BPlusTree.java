@@ -1,24 +1,13 @@
-// Java Program to Implement B+ Tree
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-// B+ Tree Node class to represent
-// internal and leaf nodes
 class BPlusTreeNode {
-    // True for leaf nodes, False for internal nodes
     boolean isLeaf; 
-
-    // The keys stored in this node
     List<Reg> keys; 
-
-    // Children nodes (for internal nodes)
     List<BPlusTreeNode> children; 
-
-    // Link to the next leaf node
     BPlusTreeNode next; 
 
-    // Constructor to initialize a node
     public BPlusTreeNode(boolean isLeaf) {
         this.isLeaf = isLeaf;
         this.keys = new ArrayList<>();
@@ -27,17 +16,13 @@ class BPlusTreeNode {
     }
 }
 
-// B+ Tree class with basic operations: insert and search
 class BPlusTree {
-    // Root node of the tree
     private BPlusTreeNode root;
     Reg foundata;
     boolean found = false;
   
-    // Maximum number of keys per node
     private final int order; 
 
-    // Constructor to initialize the B+ Tree
     public BPlusTree(int order) {
         if (order < 3) {
             throw new IllegalArgumentException("Order must be at least 3");
@@ -46,7 +31,6 @@ class BPlusTree {
         this.order = order;
     }
 
-    // Find the appropriate leaf node for insertion
     private BPlusTreeNode findLeaf(Reg key) {
         BPlusTreeNode node = root;
         while (!node.isLeaf) {
@@ -59,18 +43,15 @@ class BPlusTree {
         return node;
     }
 
-    // Insert a key into the B+ Tree
     public void insert(Reg key) {
         BPlusTreeNode leaf = findLeaf(key);
         insertIntoLeaf(leaf, key);
 
-        // Split the leaf node if it exceeds the order
         if (leaf.keys.size() > order - 1) {
             splitLeaf(leaf);
         }
     }
 
-    // Insert into the leaf node
     private void insertIntoLeaf(BPlusTreeNode leaf, Reg key) {
         int pos = Collections.binarySearch(leaf.keys, key);
         if (pos < 0) {
@@ -79,19 +60,16 @@ class BPlusTree {
         leaf.keys.add(pos, key);
     }
 
-    // Split a leaf node and update parent nodes
     private void splitLeaf(BPlusTreeNode leaf) {
         int mid = (order + 1) / 2;
         BPlusTreeNode newLeaf = new BPlusTreeNode(true);
 
-        // Move half the keys to the new leaf node
         newLeaf.keys.addAll(leaf.keys.subList(mid, leaf.keys.size()));
         leaf.keys.subList(mid, leaf.keys.size()).clear();
 
         newLeaf.next = leaf.next;
         leaf.next = newLeaf;
 
-        // If the root splits, create a new root
         if (leaf == root) {
             BPlusTreeNode newRoot = new BPlusTreeNode(false);
             newRoot.keys.add(newLeaf.keys.get(0));
@@ -103,7 +81,6 @@ class BPlusTree {
         }
     }
 
-    // Insert into the parent node after a leaf split
     private void insertIntoParent(BPlusTreeNode left, BPlusTreeNode right, Reg key) {
         BPlusTreeNode parent = findParent(root, left);
 
@@ -119,22 +96,18 @@ class BPlusTree {
         parent.keys.add(pos, key);
         parent.children.add(pos + 1, right);
 
-        // Split the internal node if it exceeds the order
         if (parent.keys.size() > order - 1) {
             splitInternal(parent);
         }
     }
 
-    // Split an internal node
     private void splitInternal(BPlusTreeNode internal) {
-        int mid = (order - 1) / 2; // Corrected mid calculation
+        int mid = (order - 1) / 2; 
         BPlusTreeNode newInternal = new BPlusTreeNode(false);
     
-        // Move half the keys to the new internal node
         newInternal.keys.addAll(internal.keys.subList(mid + 1, internal.keys.size()));
         internal.keys.subList(mid + 1, internal.keys.size()).clear();
     
-        // Move half the children to the new internal node
         newInternal.children.addAll(internal.children.subList(mid + 1, internal.children.size()));
         internal.children.subList(mid + 1, internal.children.size()).clear();
     
@@ -149,7 +122,6 @@ class BPlusTree {
         }
     }
 
-    // Find the parent node of a given node
     private BPlusTreeNode findParent(BPlusTreeNode current, BPlusTreeNode target) {
         if (current.isLeaf || current.children.isEmpty()) {
             return null;
@@ -159,7 +131,6 @@ class BPlusTree {
             BPlusTreeNode child = current.children.get(i);
 
             if (child == target) {
-                // Parent found
                 return current; 
             }
 
@@ -169,23 +140,19 @@ class BPlusTree {
             }
         }
 
-        // Parent not found
         return null; 
     }
 
-    // Search for a key in the B+ Tree
     public boolean search(Reg key) {
         BPlusTreeNode node = findLeaf(key);
         int pos = Collections.binarySearch(node.keys, key);
         return pos >= 0;
     }
 
-    // Display the Tree (for debugging purposes)
     public void printTree() {
         printNode(root, 0);
     }
 
-    // Delete a key from the B+ Tree
     public void delete(Reg key) {
         BPlusTreeNode leaf = findLeaf(key);
         int pos = Collections.binarySearch(leaf.keys, key);
@@ -203,12 +170,10 @@ class BPlusTree {
         }
     }
 
-    // Delete a key from the leaf node
     private void deleteFromLeaf(BPlusTreeNode leaf, int pos) {
         leaf.keys.remove(pos);
     }
 
-    // Balance the tree after a deletion
     private void balanceAfterDeletion(BPlusTreeNode node) {
         if (node == root) {
             if (node.keys.isEmpty() && !node.isLeaf) {
@@ -235,7 +200,6 @@ class BPlusTree {
         }
     }
 
-    // Borrow a key from the left sibling
     private void borrowFromLeftSibling(BPlusTreeNode node, BPlusTreeNode leftSibling, BPlusTreeNode parent, int parentIndex) {
         node.keys.add(0, leftSibling.keys.remove(leftSibling.keys.size() - 1));
         if (!leftSibling.isLeaf) {
@@ -244,7 +208,6 @@ class BPlusTree {
         parent.keys.set(parentIndex, node.keys.get(0));
     }
 
-    // Borrow a key from the right sibling
     private void borrowFromRightSibling(BPlusTreeNode node, BPlusTreeNode rightSibling, BPlusTreeNode parent, int parentIndex) {
         node.keys.add(rightSibling.keys.remove(0));
         if (!rightSibling.isLeaf) {
@@ -268,7 +231,6 @@ class BPlusTree {
         }
     }
     
-
     private void printNode(BPlusTreeNode node, int level) {
         System.out.println("Level " + level + ": " + node.keys);
         if (!node.isLeaf) {

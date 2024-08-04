@@ -12,7 +12,6 @@ public class BStarTree {
         this.root = new Node(true);
     }
 
-    // Node class for B* tree
     class Node {
         boolean leaf;
         ArrayList<Reg> keys;
@@ -25,7 +24,6 @@ public class BStarTree {
         }
     }
 
-    // Method to insert a key in the B* tree
     public void insert(Reg key) {
         Node r = root;
         if (r.keys.size() == 2 * minDegree - 1) {
@@ -39,35 +37,29 @@ public class BStarTree {
         }
     }
 
-    // Method to split the child node
     private void splitChild(Node parent, int i, Node child) {
-        int t = minDegree; // 't' is the minimum degree
+        int t = minDegree;
         Node newNode = new Node(child.leaf);
         
-        // Ensure the number of keys is consistent with B* tree properties
-        int numKeysToMove = t - 1; // B* trees maintain more keys per node than B-trees
+        int numKeysToMove = t - 1; 
         if (child.keys.size() < 2 * t - 1) {
             numKeysToMove = child.keys.size() - t;
         }
     
-        // Move keys and children to the new node
         newNode.keys.addAll(child.keys.subList(t, t + numKeysToMove));
         if (!child.leaf) {
             newNode.children.addAll(child.children.subList(t, t + numKeysToMove + 1));
         }
     
-        // Insert new key to parent
         parent.keys.add(i, child.keys.get(t - 1));
         parent.children.add(i + 1, newNode);
     
-        // Remove moved keys and children from the child node
         child.keys.subList(t - 1, child.keys.size()).clear();
         if (!child.leaf) {
             child.children.subList(t, child.children.size()).clear();
         }
     }
 
-    // Method to insert in a non-full node
     private void insertNonFull(Node node, Reg key) {
         int i = node.keys.size() - 1;
 
@@ -91,45 +83,36 @@ public class BStarTree {
         }
     }
 
-    // Method to search for a key in the B* tree
     public Reg search(Reg key) {
-        // Initialize the search starting from the root node
         return search(root, key);
     }
     
     private Reg search(Node node, Reg key) {
         int i = 0;
     
-        // Traverse the keys in the current node to find the correct position or match
         while (i < node.keys.size() && key.ID > node.keys.get(i).ID) {
             i++;
         }
     
-        // If the key matches one in the current node, return the key
         if (i < node.keys.size() && key.ID == node.keys.get(i).ID) {
             found = true;
             foundata = node.keys.get(i);
             return node.keys.get(i);
         }
     
-        // If the current node is a leaf and the key isn't found, return null
         if (node.leaf) {
             found = false;
             foundata = null;
             return null;
         }
     
-        // If not a leaf, search the appropriate child
-        // Ensure i is within bounds before accessing children
         if (i < node.children.size()) {
             return search(node.children.get(i), key);
         }
     
-        // If out of bounds, return null
         return null;
     }
 
-    // Method to delete a key from the B* tree
     public void delete(int ID) {
         found = false;
         foundata = null;
